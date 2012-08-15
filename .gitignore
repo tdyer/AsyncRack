@@ -41,7 +41,6 @@ vendor/assets/tiny_mce/
 /entry_audible_magic
 /entry_audible_magic_error
 /admin_audible_magic
-.rvmrc
 .bundle
 .sass-cache/
 /private/wwm_data_files/*
