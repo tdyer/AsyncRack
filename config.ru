@@ -16,13 +16,13 @@ class EMAsyncApp
     req = Rack::Request.new(env)
     # show the path that we're trying to dispatch to
     method  = req.path_info.split('/')[1]
-    puts "method_missing: try to call method #{method}"
+    # puts "method_missing: try to call method #{method}"
     #  puts "WTF: there ain't no stinking method named #{method} DUDE"
     #"\nWTF: there ain't no stinking method named #{method} DUDE\n" 
   end
 
   def call(env)
-    puts "@method_to_invoke = #{@method_to_invoke}"
+    # puts "@method_to_invoke = #{@method_to_invoke}"
     send(@method_to_invoke, env)
   end
 
@@ -30,7 +30,7 @@ class EMAsyncApp
   # Plain ole rack handler
   def rack_standard(env)
     @req = Rack::Request.new(env)
-    puts "here in standard rack handler"
+    # puts "here in standard rack handler"
     @res = Rack::Response.new
     @res.write("Hey from a standard rack app")
     @res.finish
@@ -45,7 +45,7 @@ class EMAsyncApp
 
       # and it will start a deferred job that will fire in 5 seconds
       EM.add_timer(5) do
-        puts "yeehaaa going to DB!!!!!"
+        # puts "yeehaaa going to DB!!!!!"
       end
     end
     # returning this signals to the server we are sending an async
