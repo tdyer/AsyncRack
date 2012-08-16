@@ -1,0 +1,26 @@
+See
+http://www.euperia.com/linux/tools-and-utilities/speed-testing-your-website-with-siege-part-one/720
+
+$ brew install siege
+Warning: You have Xcode 4.1, which is outdated.
+Please install Xcode 4.3.
+==> Downloading http://www.joedog.org/pub/siege/siege-2.71.tar.gz
+################################################################################################################################ 100.0%
+==> ./configure --prefix=/usr/local/Cellar/siege/2.71 --mandir=/usr/local/Cellar/siege/2.71/share/man --localstatedir=/usr/local/var --
+==> make install
+==> Caveats
+Mac OS X has only 16K ports available that won't be released until socket
+TIME_WAIT is passed. The default timeout for TIME_WAIT is 15 seconds.
+Consider reducing in case of available port bottleneck.
+
+You can check whether this is a problem with netstat:
+
+    # sysctl net.inet.tcp.msl
+    net.inet.tcp.msl: 15000
+
+    # sudo sysctl -w net.inet.tcp.msl=1000
+    net.inet.tcp.msl: 15000 -> 1000
+
+Run siege.config to create the ~/.siegerc config file.
+==> Summary
+/usr/local/Cellar/siege/2.71: 17 files, 256K, built in 15 seconds
