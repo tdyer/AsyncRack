@@ -1,6 +1,11 @@
 See
 http://www.euperia.com/linux/tools-and-utilities/speed-testing-your-website-with-siege-part-one/720
 
+To Install on Linux
+sudo apt-get install siege
+
+To Install on OSX
+
 $ brew install siege
 Warning: You have Xcode 4.1, which is outdated.
 Please install Xcode 4.3.

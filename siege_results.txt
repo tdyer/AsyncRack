@@ -1,0 +1,11 @@
+See
+http://www.euperia.com/linux/tools-and-utilities/speed-testing-your-website-with-siege-part-one/720
+
+
+# one connection, one request
+# -b for NO DELAY, thoughput benchmarking
+siege -b -c 1 -r 1  http://async_rack.dev/rack_async 
+
+
+siege -b -c 1 -r 1  http://async_rack.dev/rack_async 
+
