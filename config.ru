@@ -57,10 +57,18 @@ class EMAsyncApp
     Rack::Async::RESPONSE
   end
 
+  def self.conn
+    unless @conn
+      @conn = PG::EM::Client.new(:dbname => 'ourstage_development')
+      @conn.setnonblocking(true)      
+    end
+    @conn
+  end
+
   def db_async(env)
-    pg = PG::EM::Client.new(:dbname => 'ourstage_development')
 
     event_machine do
+      pg = self.class.conn
       # each new client connection will get this response immediately
       env['async.callback'].call([200, {}, ["Hey from a DB ASync Rack app!!!!!!!"]])
 
