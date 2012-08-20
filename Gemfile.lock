@@ -4,9 +4,8 @@ GEM
     archive-tar-minitar (0.5.2)
     columnize (0.3.6)
     daemons (1.1.9)
-    em-pg-client (0.2.0)
-      eventmachine (>= 0.12.10)
-      pg (>= 0.13.2)
+    em-postgres (0.0.2)
+      eventmachine (>= 0.12.9)
     eventmachine (0.12.10)
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
@@ -32,7 +31,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  em-pg-client (~> 0.2.0)
+  em-postgres
+  pg
   rack-async
   ruby-debug19
   thin
