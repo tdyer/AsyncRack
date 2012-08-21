@@ -1,0 +1,30 @@
+Thin will create a connection to listen and for each request
+will invoke the Connection::recieve_data(data), 
+http://eventmachine.rubyforge.org/EventMachine/Connection.html#M000269
+This will pass the raw TCP request data to the Ragel HTTP parser 
+Thin::HttpParser#finished (this is a the Mongrel Ragel parser in ext/thin_parser/thin.c)
+Now we have a Thin::Request instance that can be used by the target app!
+and invoke the Rack app in the main EventMachine Reactor loop
+
+
+- lib/thin/controllers/controller.rb
+  #start
+  - Thin::Server#initialize(...)
+  create a Server (lib/thin/server.rb)
+   - Thin::Server#select_backend
+    select a backend, will default to 
+    Thin::Backends::TcpServer.new(host,port)
+   - Thin::Server#start
+     - Thin::Backends::Base#start
+       - Thin::Backens::connect
+         - EventMachine.start_server(@host, port, Connection, &method(:initialize_connection)
+         See http://eventmachine.rubyforge.org/EventMachine.html#M000470    
+         This will create a new Thin::Connection instance for each incoming connection. 
+           - Thin::Connection.recieve_data(data)
+           Will get the data for the HTTP request, data, on a socket
+           - Thin::Request.parse(data)
+           parse it using Thin's Ragel parser
+           This will parse the raw data from the connection into a Thin::Request instance
+             - Thin::HttpParser#finished (this is a the Mongrel Ragel parser)
+           - Thin::Connection.pre_process()
+             

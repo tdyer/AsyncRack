@@ -1,0 +1,94 @@
+This will establish a connection with the DB.
+Execute SQL and return with no result asynchronously.
+Attach a handler that will wait on the DB connection 
+for the result.
+The handler will invoke a client's success or error callback with the
+result when the DB sends it back.
+
+Postgres will not allow one to send another query while it's sending 
+back results of a previous query. So, this gem will queue up DB queries
+
+
+#########################
+ Connect to the ourstage_development DB
+#########################
+# gem client code
+pg = EventMachine::Postgres.new(:database => 'ourstage_development')
+
+# gem implementation
+EventMachine::Postgres#initialize(opts)
+- Check that EM responds to :watch and :socket methods
+- EventMachine::Postgres#connect(@settings)
+  - conn = EventMachine::Postgres#connect_socket(opts)
+    This will call the pg gem's PGconn.connect(..) method to make a
+    TCP socket connection.
+  - EM.watch(conn.socket, EventMachine::Postgress, conn, opts, self)
+    Register's this postgres DB connection's FD/socket with the EM event loop. 
+    Create a handler,
+    EventMachine::PostgresConnection.new(conn, opts, self) for
+    readable/writeable events on this FD. 
+    Readable events will be handled with
+    EventMachine::PostgresConnection#notify_readable (see below for
+    more info)
+
+#########################  
+# Execute SQL
+#########################
+# gem client code
+pg.execute("some SQL") # aliased to pg.query(...)
+
+# gem implementation
+EventMachine::Postgres#query(sql, params, &blk)
+- df = EventMachine::DefaultDeferrable.new
+- cb = Proc.new{ |r| df.suceed(r) }
+     Callback for sucess
+- eb = Proc.new { |r| df.fail(r) }    
+     Callback for error
+- @connection.execute(sql,params,cb,eb)
+  - EventMachine::PostgresConnection.execute(sql,params, cblk, eblk,
+  retries = 0)
+    If not processing 
+      set processing flag and send_query(sql, params) to DB
+    Else we are processing then process later with the next_step method
+      queue up the request to DB
+      @queue << [sql,params, cblk, eblk, retries]
+
+    - @current = [sql,params, cblk, eblk, retries]
+      Set the current SQL, params and callbacks to be used by 
+      notify_readable below
+- df 
+  Return the deferrable
+
+#########################  
+# Read results from previous SQL send to DB
+#########################
+
+# gem implementation
+EventMachine::PostgresConnection#notify_readable
+- if there is a current query, @current, then read the result of this
+  query.
+  - EventMachine#Postgres#get_result
+    read the connection query result until there is no more data to be
+    read.
+  - set the current_query to nil
+  - set the processing flag to false
+  - invoke the success callback
+    cblk.call(result)
+    Proc.new{ |result| df.suceed(result) } # which will invoke the
+    client's callback
+    # client code 
+    This is where the gem client's success callback gets fired
+    df.callback{ |result| puts "SQL result = #{Array(result)}" }
+  - clear the result
+  - next_query
+
+
+#########################  
+# Invoke DB requests that where queued
+#########################
+- next_query
+  if not processing and connected
+    pull a sql query off the queue and execute
+    sql, params, cblk, eblk = @queue.shift
+    execute(sql, params, cblk, eblk)
+    - EventMachine::PostgresConnection.execute(sql,params, cblk, eblk,..)
