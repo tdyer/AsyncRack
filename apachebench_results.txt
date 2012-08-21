@@ -1,62 +1,122 @@
+# Start up the rack app
+$ thin --rackup config.ru start -p 8111
+
+# call the rack app with the db_async path
+# which will run this sql query asynchronously
+# 'select count(*) from categories'
+# Simulate 50 users each sending 2 DB queries.
+# The request/second is  2989.09
+# NOTE: I'm running out of File Descriptors on my Mac 
+# for larger tests.
+$ ab -n 100 -c 50 http://127.0.0.1:8111/db_async
+This is ApacheBench, Version 2.3 <$Revision: 1178079 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient).....done
+
+
+Server Software:        thin
+Server Hostname:        127.0.0.1
+Server Port:            8111
+
+Document Path:          /db_async
+Document Length:        35 bytes
+
+Concurrency Level:      50
+Time taken for tests:   0.033 seconds
+Complete requests:      100
+Failed requests:        0
+Write errors:           0
+Total transferred:      11000 bytes
+HTML transferred:       3500 bytes
+Requests per second:    2989.09 [#/sec] (mean)
+Time per request:       16.727 [ms] (mean)
+Time per request:       0.335 [ms] (mean, across all concurrent requests)
+Transfer rate:          321.09 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    1   0.5      1       2
+Processing:     7   14   6.5     18      23
+Waiting:        6   13   6.3     16      22
+Total:          7   15   6.9     19      24
+
+Percentage of the requests served within a certain time (ms)
+  50%     19
+  66%     20
+  75%     22
+  80%     23
+  90%     24
+  95%     24
+  98%     24
+  99%     24
+ 100%     24 (longest request)
+
 
 # 1 request by 1 user/client to a standard rack app
-# //usr/sbin/ab -n 1 -c 1 http://127.0.0.1:8111/rack
+# $ ab -n 1 -c 1 http://127.0.0.1:8111/rack
 # 1 request by 1 user/client to a ASYNC rack app
-# /usr/sbin/ab -n 1 -c 1 http://127.0.0.1:8111/rack_async
+# $ ab -n 1 -c 1 http://127.0.0.1:8111/rack_async
 
-# 1000 request by 10 user/clients
-# /usr/sbin/ab -n 1000 -c 10 http://127.0.0.1:8111/rack_async
-# This is ApacheBench, Version 2.3 <$Revision: 655654 $>
-# Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-# Licensed to The Apache Software Foundation, http://www.apache.org/
+# call the rack app with the rack_async path
+# which simulates a blocking DB call
+# which will run this sql query asynchronously
+# 'select count(*) from categories'
+# Simulate 10 users each sending 100 HTTP requests
+# The request/second is  7039
+$ ab -n 1000 -c 10 http://127.0.0.1:8111/rack_async
+This is ApacheBench, Version 2.3 <$Revision: 1178079 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
 
-# Benchmarking 127.0.0.1 (be patient)
-# Completed 100 requests
-# Completed 200 requests
-# Completed 300 requests
-# Completed 400 requests
-# Completed 500 requests
-# Completed 600 requests
-# Completed 700 requests
-# Completed 800 requests
-# Completed 900 requests
-# Completed 1000 requests
-# Finished 1000 requests
+Benchmarking 127.0.0.1 (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
 
 
-# Server Software:        thin
-# Server Hostname:        127.0.0.1
-# Server Port:            8111
+Server Software:        thin
+Server Hostname:        127.0.0.1
+Server Port:            8111
 
-# Document Path:          /rack_async
-# Document Length:        32 bytes
+Document Path:          /rack_async
+Document Length:        32 bytes
 
-# Concurrency Level:      10
-# Time taken for tests:   2.558 seconds
-# Complete requests:      1000
-# Failed requests:        0
-# Write errors:           0
-# Total transferred:      107000 bytes
-# HTML transferred:       32000 bytes
-# Requests per second:    390.99 [#/sec] (mean)
-# Time per request:       25.576 [ms] (mean)
-# Time per request:       2.558 [ms] (mean, across all concurrent requests)
-# Transfer rate:          40.86 [Kbytes/sec] received
+Concurrency Level:      10
+Time taken for tests:   0.142 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      107000 bytes
+HTML transferred:       32000 bytes
+Requests per second:    7039.87 [#/sec] (mean)
+Time per request:       1.420 [ms] (mean)
+Time per request:       0.142 [ms] (mean, across all concurrent requests)
+Transfer rate:          735.61 [Kbytes/sec] received
 
-# Connection Times (ms)
-#               min  mean[+/-sd] median   max
-# Connect:        0    0   0.4      0       4
-# Processing:     1   25  39.7      4     158
-# Waiting:        0   20  36.5      3     158
-# Total:          1   26  39.6      4     158
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.1      0       0
+Processing:     1    1   0.6      1       5
+Waiting:        0    1   0.6      1       5
+Total:          1    1   0.6      1       5
 
-# Percentage of the requests served within a certain time (ms)
-#   50%      4
-#   66%      5
-#   75%     23
-#   80%     55
-#   90%    102
-#   95%    105
-#   98%    149
-#   99%    158
-#  100%    158 (longest request)
+Percentage of the requests served within a certain time (ms)
+  50%      1
+  66%      1
+  75%      1
+  80%      1
+  90%      2
+  95%      2
+  98%      5
+  99%      5
+ 100%      5 (longest request)

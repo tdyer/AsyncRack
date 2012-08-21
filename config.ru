@@ -22,3 +22,7 @@ end
 # same as above but logging request/response (much slower!)
 # thin --rackup config.ru start -p 8111 -V
 
+# run one request as one user
+# ab -n 1 -c 1 http://127.0.0.1:8111/rack_async
+# run 2 requests for each of the 50 users
+# ab -n 100 -c 50 http://127.0.0.1:8111/rack_async
