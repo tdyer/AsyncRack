@@ -67,12 +67,12 @@ class TrackerHeartbeat
 
       # success callback
       df.callback { |result|
-        puts "EMAsyncApp::db_async DB results = #{Array(result).inspect}"
+        puts "TrackerHeartbeat::call DB results = #{Array(result).inspect}"
       }
 
       # error callback
       df.errback {|ex|
-        puts "EMAsyncApp::db_async Exception = #{ex.inspect}"        
+        puts "TrackerHeartbeat::call Exception = #{ex.inspect}"        
         raise ex
       }
 
