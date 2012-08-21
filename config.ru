@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rack/async'
 require './em_async_app'
+require './tracker_heartbeat'
 
 use Rack::Async
 
@@ -21,6 +22,9 @@ map "/health_check" do
   run lambda{ |env| [200, {"Content-Type"=> "text/plain"}, ["Good to go!"]] }
 end
 
+map "/tracker/heartbeat/" do
+  run TrackerHeartbeat.new
+end
 
 # start this rack app with thin on port 8111
 #  thin --rackup config.ru start -p 8111

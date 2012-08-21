@@ -1,0 +1,22 @@
+production:
+  password: <%= PG_DATABASE_PASS if defined?(PG_DATABASE_PASS) %>
+  adapter: postgresql
+  database: <%= defined?(DATABASE_NAME) ? DATABASE_NAME : 'stats_production' %>
+  username: ourstage
+  host: <%= defined?(DATABASE_HOST_IP) ? DATABASE_HOST_IP : '127.0.0.1' %>
+  port: 5432
+
+test:
+  adapter: postgresql
+  database: stats_test
+  username: ourstage
+  password:
+
+development:
+  password: 
+  adapter: postgresql
+  database: stats_development
+  host: 127.0.0.1
+  username: ourstage
+  port: 5432
+
