@@ -10,5 +10,6 @@ gem "rack-async"
 
 gem 'pg'
 gem "em-postgres"
+gem 'json'
 
 gem 'ruby-debug19', :group => :development

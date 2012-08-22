@@ -7,6 +7,7 @@ GEM
     em-postgres (0.0.2)
       eventmachine (>= 0.12.9)
     eventmachine (0.12.10)
+    json (1.7.5)
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
     pg (0.14.0)
@@ -32,6 +33,7 @@ PLATFORMS
 
 DEPENDENCIES
   em-postgres
+  json
   pg
   rack-async
   ruby-debug19
