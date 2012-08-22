@@ -1,8 +1,38 @@
 require 'rubygems'
+require 'logger'
 require 'rack/async'
 require './em_async_app'
 require './tracker_heartbeat'
+require './promo_judge'
 
+use Rack::ShowExceptions
+
+# Set the development, test or production environment
+# development (the default)
+# thin --rackup config.ru start -p 8111
+# production
+# thin --rackup config.ru start -p 8111 -e production
+environment = ENV['RACK_ENV']
+valid_environments = %w{development test production}
+unless valid_environments.include?(environment)
+  raise ArgumentError.new("Invalid environment #{environment}, must be #{valid_environments.join(' OR ')}") 
+end
+
+# set up the Apache-like logger
+log = Logger.new("log/#{environment}.log", File::WRONLY | File::APPEND)
+case environment
+when 'development'
+  log.level = Logger::DEBUG
+when 'test'
+  log.level = Logger::DEBUG
+when 'production'
+  log.level = Logger::INFO
+else
+  raise ArgumentError.new("Invalid environment #{environment}, must be #{valid_environments.join(' OR ')}") 
+end
+use Rack::CommonLogger, log
+
+# for handling asyn requests
 use Rack::Async
 
 map "/rack" do
@@ -24,6 +54,9 @@ end
 
 map "/tracker/heartbeat/" do
   run TrackerHeartbeat.new
+end
+map "/api/promo_judge/click" do
+  run PromoJudge.new(:method => :click, :logger => log, :environment => environment)
 end
 
 # start this rack app with thin on port 8111
