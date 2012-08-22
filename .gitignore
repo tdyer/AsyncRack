@@ -1,8 +1,8 @@
 schema.rb
 tmp/*
 tmp/**/*
-log/*.log
-log/*.pid
+log/*.log*
+log/*.pid*
 *.log
 .DS_Store
 .idea
